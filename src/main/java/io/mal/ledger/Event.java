@@ -20,6 +20,14 @@ public sealed interface Event {
         }
     }
 
+    record Authorisation(String id, int postingDay, Account account, String authId, Money amount, int valueDate)
+            implements Event {
+
+        public Authorisation {
+            requirePositive(id, amount);
+        }
+    }
+
     private static void requirePositive(String id, Money amount) {
         if (!amount.isPositive()) {
             throw new IllegalArgumentException(id + " must carry an amount above zero, not " + amount.amount());

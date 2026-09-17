@@ -38,14 +38,33 @@ public final class Replay {
         return Collections.unmodifiableList(outcomes);
     }
 
+    public Money availableBalance(Account account, int day) {
+        Money available = ledger.closingBalance(account, day);
+        for (Outcome outcome : outcomes) {
+            if (outcome.status() == Outcome.Status.APPROVED
+                    && outcome.event() instanceof Event.Authorisation authorisation
+                    && authorisation.account().equals(account)) {
+                available = available.subtract(authorisation.amount());
+            }
+        }
+        return available;
+    }
+
     private void apply(Event event) {
         Outcome.Status status = switch (event) {
             case Event.Credit credit -> post(new Entry(
                     credit.account(), credit.postingDay(), credit.valueDate(), credit.amount()));
             case Event.Debit debit -> post(new Entry(
                     debit.account(), debit.postingDay(), debit.valueDate(), debit.amount().negate()));
+            case Event.Authorisation authorisation -> authorise(authorisation);
         };
         outcomes.add(new Outcome(event, status));
+    }
+
+    private Outcome.Status authorise(Event.Authorisation authorisation) {
+        Money afterHold = availableBalance(authorisation.account(), authorisation.postingDay())
+                .subtract(authorisation.amount());
+        return afterHold.isNegative() ? Outcome.Status.DECLINED : Outcome.Status.APPROVED;
     }
 
     private Outcome.Status post(Entry entry) {
