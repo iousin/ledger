@@ -29,7 +29,7 @@ class ReplayTest {
 
     @Test
     void creditsAndDebitsArePostedAsSignedEntries() {
-        Replay replay = replay(6, E1, E2);
+        Replay replay = replay(1, E1, E2);
 
         assertEquals(
                 List.of(new Entry(ACC_001, 1, 1, aed("1200.00"), Entry.Kind.CREDIT),

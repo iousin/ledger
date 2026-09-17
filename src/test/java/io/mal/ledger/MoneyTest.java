@@ -3,6 +3,7 @@ package io.mal.ledger;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.Currency;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,6 +20,12 @@ class MoneyTest {
         assertEquals("1200.00", Money.of("AED", "1200").amount().toPlainString());
         assertEquals("10.000", Money.of("BHD", "10").amount().toPlainString());
         assertEquals(Money.of("AED", "250.00"), Money.of("AED", "250"));
+    }
+
+    @Test
+    void zeroSitsAtTheCurrencyScale() {
+        assertEquals(Money.of("BHD", "0.000"), Money.zero(Currency.getInstance("BHD")));
+        assertEquals(Money.of("AED", "0.00"), Money.zero(Currency.getInstance("AED")));
     }
 
     @Test
