@@ -7,7 +7,8 @@ public record Entry(Account account, int postingDay, int valueDate, Money amount
         DEBIT,
         SETTLEMENT,
         FEE,
-        INTEREST
+        INTEREST,
+        REVERSAL
     }
 
     public Entry {

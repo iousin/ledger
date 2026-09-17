@@ -54,3 +54,9 @@ Within each account the brief's listed order already runs by posting day. The on
 I replay by posting day and keep the brief's order within a day, because the end of a day is one event for the whole ledger. E10 was booked on Day 5, so it goes in before Day 5 closes, and Day 5 closes with ACC-002 at 10.000. The ledger accepts no entry with a posting day earlier than the last one, on any account.
 
 Order within a day does matter once. On Day 5, E7 comes before E8, which is why Auth-B is declined. Processed the other way round, Auth-B would be approved against 465.00.
+
+## 6. Reversal
+
+E9 names E7 but carries no amount. I post a new entry for E7's amount with the opposite sign, using E9's own posting day and value date. E7 is never touched.
+
+A reversal is accepted only against a posted credit or debit on the same account that has not already been reversed. Anything else is rejected the same way as E6. Reversing a settlement or releasing a hold is not modelled.

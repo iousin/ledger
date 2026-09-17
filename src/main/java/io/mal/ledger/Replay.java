@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public final class Replay {
 
@@ -93,6 +94,7 @@ public final class Replay {
             case Event.InstalmentCredit credit -> postInstalments(credit);
             case Event.Authorisation authorisation -> authorise(authorisation);
             case Event.Settlement settlement -> settle(settlement);
+            case Event.Reversal reversal -> reverse(reversal);
         };
         outcomes.add(outcome);
     }
@@ -178,5 +180,45 @@ public final class Replay {
         }
         return new Outcome(settlement, Outcome.Status.REJECTED,
                 "no active authorisation " + settlement.authId());
+    }
+
+    private Outcome reverse(Event.Reversal reversal) {
+        Optional<Money> compensation = compensationFor(reversal);
+        if (compensation.isEmpty()) {
+            return new Outcome(reversal, Outcome.Status.REJECTED,
+                    "no reversible event " + reversal.reversedEventId());
+        }
+        ledger.post(new Entry(reversal.account(), reversal.postingDay(), reversal.valueDate(),
+                compensation.get(), Entry.Kind.REVERSAL));
+        return new Outcome(reversal, Outcome.Status.REVERSED);
+    }
+
+    private Optional<Money> compensationFor(Event.Reversal reversal) {
+        if (alreadyReversed(reversal.reversedEventId())) {
+            return Optional.empty();
+        }
+        for (Outcome outcome : outcomes) {
+            if (!outcome.event().id().equals(reversal.reversedEventId())) {
+                continue;
+            }
+            if (outcome.event() instanceof Event.Debit debit && debit.account().equals(reversal.account())) {
+                return Optional.of(debit.amount());
+            }
+            if (outcome.event() instanceof Event.Credit credit && credit.account().equals(reversal.account())) {
+                return Optional.of(credit.amount().negate());
+            }
+        }
+        return Optional.empty();
+    }
+
+    private boolean alreadyReversed(String eventId) {
+        for (Outcome outcome : outcomes) {
+            if (outcome.status() == Outcome.Status.REVERSED
+                    && outcome.event() instanceof Event.Reversal earlier
+                    && earlier.reversedEventId().equals(eventId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

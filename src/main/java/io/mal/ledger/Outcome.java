@@ -11,6 +11,7 @@ public record Outcome(Event event, Status status, String reason) {
         APPROVED,
         DECLINED,
         SETTLED,
+        REVERSED,
         REJECTED
     }
 }

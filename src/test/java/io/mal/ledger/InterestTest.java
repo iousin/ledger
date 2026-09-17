@@ -19,11 +19,11 @@ class InterestTest {
     private static final Event E6 = new Event.Settlement("E6", 4, ACC_001, "Auth-Z", aed("180.00"), 4);
     private static final Event E7 = new Event.Debit("E7", 5, ACC_001, aed("620.00"), 2);
     private static final Event E8 = new Event.Authorisation("E8", 5, ACC_001, "Auth-B", aed("90.00"), 5);
-    private static final Event E9_STAND_IN = new Event.Credit("E9-STAND-IN", 6, ACC_001, aed("620.00"), 2);
+    private static final Event E9 = new Event.Reversal("E9", 6, ACC_001, "E7", 2);
     private static final Event E10 = new Event.InstalmentCredit("E10", 5, ACC_002, bhd("10.000"), 3, 5);
 
     private static final List<Event> STREAM =
-            List.of(E1, E2, E3, E4, E5, E6, E7, E8, E9_STAND_IN, E10);
+            List.of(E1, E2, E3, E4, E5, E6, E7, E8, E9, E10);
 
     private static Money aed(String amount) {
         return Money.of("AED", amount);

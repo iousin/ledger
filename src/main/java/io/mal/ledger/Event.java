@@ -47,6 +47,10 @@ public sealed interface Event {
         }
     }
 
+    record Reversal(String id, int postingDay, Account account, String reversedEventId, int valueDate)
+            implements Event {
+    }
+
     private static void requirePositive(String id, Money amount) {
         if (!amount.isPositive()) {
             throw new IllegalArgumentException(id + " must carry an amount above zero, not " + amount.amount());
