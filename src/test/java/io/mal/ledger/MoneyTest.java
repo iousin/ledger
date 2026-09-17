@@ -52,6 +52,13 @@ class MoneyTest {
     }
 
     @Test
+    void onlyAmountsBelowZeroAreNegative() {
+        assertTrue(Money.of("AED", "-0.01").isNegative());
+        assertFalse(Money.of("AED", "0.00").isNegative());
+        assertFalse(Money.of("AED", "0.01").isNegative());
+    }
+
+    @Test
     void refusesToCombineCurrencies() {
         Money aed = Money.of("AED", "25.00");
         Money bhd = Money.of("BHD", "10.000");

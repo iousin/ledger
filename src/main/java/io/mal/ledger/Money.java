@@ -35,6 +35,10 @@ public record Money(Currency currency, BigDecimal amount) {
         return amount.signum() > 0;
     }
 
+    public boolean isNegative() {
+        return amount.signum() < 0;
+    }
+
     public Money multiply(BigDecimal rate) {
         return new Money(currency, amount.multiply(rate).setScale(amount.scale(), RoundingMode.HALF_UP));
     }
