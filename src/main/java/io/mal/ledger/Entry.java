@@ -1,6 +1,13 @@
 package io.mal.ledger;
 
-public record Entry(Account account, int postingDay, int valueDate, Money amount) {
+public record Entry(Account account, int postingDay, int valueDate, Money amount, Kind kind) {
+
+    public enum Kind {
+        CREDIT,
+        DEBIT,
+        SETTLEMENT,
+        FEE
+    }
 
     public Entry {
         if (!amount.currency().equals(account.openingBalance().currency())) {

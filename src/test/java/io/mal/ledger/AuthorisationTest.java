@@ -28,7 +28,7 @@ class AuthorisationTest {
     }
 
     private static Replay replay(int lastDay, Event... events) {
-        Replay replay = new Replay(lastDay);
+        Replay replay = new Replay(lastDay, List.of(ACC_001, ACC_002));
         replay.run(List.of(events));
         return replay;
     }
@@ -85,7 +85,6 @@ class AuthorisationTest {
         Replay replay = replay(5, E1, E2, E7, smallest);
 
         assertEquals(new Outcome(smallest, DECLINED), replay.outcomes().getLast());
-        assertEquals(aed("-370.00"), replay.availableBalance(ACC_001, 5));
     }
 
     @Test

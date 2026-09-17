@@ -12,6 +12,8 @@ I date it Day 2. C2 itself talks about a fee "on Day 2" caused by an event on Da
 
 **Does reversing E7 refund the fees?** C6 expects it. I decided no. I worked out the alternative: post a 25.00 refund for each day that has a fee and is no longer negative. That gives three refunds on Day 6, closings back at 250.00, 250.00, 650.00, 465.00, 465.00, 465.00, interest of 1.03 and Day 6 at 466.03 after the interest credit. I deferred it because whether to refund depends on why the debit was reversed. A bank error should be refunded, a merchant refund need not be, and the event does not say which. The risk is covered in the architecture document.
 
+**The fee is given in AED only.** The brief defines no fee for a BHD account and I have not invented one. An account that is not held in AED is never charged. ACC-002 never closes negative, so the stream does not reach this.
+
 ## 2. Interest and rounding
 
 **Does a late entry change earlier days' interest?** The rule says interest is "on the closing ledger balance" but not when that balance is read.

@@ -28,7 +28,7 @@ class SettlementTest {
     }
 
     private static Replay replay(int lastDay, Event... events) {
-        Replay replay = new Replay(lastDay);
+        Replay replay = new Replay(lastDay, List.of(ACC_001));
         replay.run(List.of(events));
         return replay;
     }
@@ -40,7 +40,7 @@ class SettlementTest {
 
         assertEquals(aed("450.00"), beforeE5.availableBalance(ACC_001, 3));
         assertEquals(new Outcome(E5, SETTLED), afterE5.outcomes().getLast());
-        assertEquals(new Entry(ACC_001, 4, 4, aed("-185.00")), afterE5.ledger().entries().getLast());
+        assertEquals(new Entry(ACC_001, 4, 4, aed("-185.00"), Entry.Kind.SETTLEMENT), afterE5.ledger().entries().getLast());
         assertEquals(aed("465.00"), afterE5.ledger().closingBalance(ACC_001, 4));
         assertEquals(aed("465.00"), afterE5.availableBalance(ACC_001, 4));
     }

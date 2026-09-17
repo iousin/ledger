@@ -18,10 +18,12 @@ class LedgerTest {
     private static final Entry E5 = aed(4, 4, "-185.00");
     private static final Entry E7 = aed(5, 2, "-620.00");
     private static final Entry E9 = aed(6, 2, "620.00");
-    private static final Entry E10_FIRST_INSTALMENT = new Entry(ACC_002, 5, 5, Money.of("BHD", "3.334"));
+    private static final Entry E10_FIRST_INSTALMENT = new Entry(ACC_002, 5, 5, Money.of("BHD", "3.334"), Entry.Kind.CREDIT);
 
     private static Entry aed(int postingDay, int valueDate, String amount) {
-        return new Entry(ACC_001, postingDay, valueDate, Money.of("AED", amount));
+        Money money = Money.of("AED", amount);
+        return new Entry(ACC_001, postingDay, valueDate, money,
+                money.isNegative() ? Entry.Kind.DEBIT : Entry.Kind.CREDIT);
     }
 
     private static Ledger ledgerWith(Entry... entries) {
@@ -79,7 +81,7 @@ class LedgerTest {
 
     @Test
     void refusesAnEntryInAnotherCurrencyThanItsAccount() {
-        assertThrows(IllegalArgumentException.class, () -> new Entry(ACC_002, 5, 5, Money.of("AED", "25.00")));
+        assertThrows(IllegalArgumentException.class, () -> new Entry(ACC_002, 5, 5, Money.of("AED", "-25.00"), Entry.Kind.FEE));
     }
 
     @Test

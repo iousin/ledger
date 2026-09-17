@@ -6,12 +6,16 @@ import java.util.List;
 
 public final class Replay {
 
+    private static final Money OVERDRAFT_FEE = Money.of("AED", "25.00");
+
     private final Ledger ledger = new Ledger();
     private final List<Outcome> outcomes = new ArrayList<>();
     private final int lastDay;
+    private final List<Account> accounts;
 
-    public Replay(int lastDay) {
+    public Replay(int lastDay, List<Account> accounts) {
         this.lastDay = lastDay;
+        this.accounts = List.copyOf(accounts);
     }
 
     public void run(List<Event> events) {
@@ -27,6 +31,7 @@ public final class Replay {
                     apply(event);
                 }
             }
+            closeDay(day);
         }
     }
 
@@ -68,13 +73,40 @@ public final class Replay {
     private void apply(Event event) {
         Outcome outcome = switch (event) {
             case Event.Credit credit -> post(credit, new Entry(
-                    credit.account(), credit.postingDay(), credit.valueDate(), credit.amount()));
+                    credit.account(), credit.postingDay(), credit.valueDate(), credit.amount(),
+                    Entry.Kind.CREDIT));
             case Event.Debit debit -> post(debit, new Entry(
-                    debit.account(), debit.postingDay(), debit.valueDate(), debit.amount().negate()));
+                    debit.account(), debit.postingDay(), debit.valueDate(), debit.amount().negate(),
+                    Entry.Kind.DEBIT));
             case Event.Authorisation authorisation -> authorise(authorisation);
             case Event.Settlement settlement -> settle(settlement);
         };
         outcomes.add(outcome);
+    }
+
+    private void closeDay(int today) {
+        for (Account account : accounts) {
+            if (account.openingBalance().currency().equals(OVERDRAFT_FEE.currency())) {
+                chargeOverdraftFees(account, today);
+            }
+        }
+    }
+
+    private void chargeOverdraftFees(Account account, int today) {
+        for (int day = 1; day <= today; day++) {
+            if (!hasFee(account, day) && ledger.closingBalance(account, day).isNegative()) {
+                ledger.post(new Entry(account, today, day, OVERDRAFT_FEE.negate(), Entry.Kind.FEE));
+            }
+        }
+    }
+
+    private boolean hasFee(Account account, int day) {
+        for (Entry entry : ledger.entries()) {
+            if (entry.kind() == Entry.Kind.FEE && entry.account().equals(account) && entry.valueDate() == day) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Outcome post(Event event, Entry entry) {
@@ -93,7 +125,7 @@ public final class Replay {
         for (Event.Authorisation hold : activeHolds(settlement.account())) {
             if (hold.authId().equals(settlement.authId())) {
                 ledger.post(new Entry(settlement.account(), settlement.postingDay(), settlement.valueDate(),
-                        settlement.amount().negate()));
+                        settlement.amount().negate(), Entry.Kind.SETTLEMENT));
                 return new Outcome(settlement, Outcome.Status.SETTLED);
             }
         }
