@@ -27,6 +27,14 @@ public record Money(Currency currency, BigDecimal amount) {
         return new Money(currency, amount.subtract(other.amount));
     }
 
+    public Money negate() {
+        return new Money(currency, amount.negate());
+    }
+
+    public boolean isPositive() {
+        return amount.signum() > 0;
+    }
+
     public Money multiply(BigDecimal rate) {
         return new Money(currency, amount.multiply(rate).setScale(amount.scale(), RoundingMode.HALF_UP));
     }

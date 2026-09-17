@@ -42,3 +42,11 @@ I use the second. No interest is posted until the single credit on Day 6, and C1
 ## 4. Declines and rejections
 
 Neither moves money or posts a ledger entry. Both stay in the event log with their outcome, and the log is never edited. In the report Auth-B shows under authorisation states as DECLINED. E6 shows under errors, because there is no authorisation for it to be a state of. A reversal that names an unknown event would be rejected the same way as E6.
+
+## 5. Replay order
+
+Within each account the brief's listed order already runs by posting day. The one exception is across accounts: E10 on ACC-002 is posted Day 5 but listed after E9 on ACC-001, posted Day 6. The accounts do not affect each other, so no balance depends on it.
+
+I replay by posting day and keep the brief's order within a day, because the end of a day is one event for the whole ledger. E10 was booked on Day 5, so it goes in before Day 5 closes, and Day 5 closes with ACC-002 at 10.000. The ledger accepts no entry with a posting day earlier than the last one, on any account.
+
+Order within a day does matter once. On Day 5, E7 comes before E8, which is why Auth-B is declined. Processed the other way round, Auth-B would be approved against 465.00.

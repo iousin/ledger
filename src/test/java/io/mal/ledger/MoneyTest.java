@@ -6,7 +6,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MoneyTest {
 
@@ -34,6 +36,19 @@ class MoneyTest {
     @Test
     void subtractionCanGoBelowZero() {
         assertEquals(Money.of("AED", "-370.00"), Money.of("AED", "250.00").subtract(Money.of("AED", "620.00")));
+    }
+
+    @Test
+    void negateFlipsTheSign() {
+        assertEquals(Money.of("AED", "-620.00"), Money.of("AED", "620.00").negate());
+        assertEquals(Money.of("AED", "620.00"), Money.of("AED", "-620.00").negate());
+    }
+
+    @Test
+    void onlyAmountsAboveZeroArePositive() {
+        assertTrue(Money.of("AED", "0.01").isPositive());
+        assertFalse(Money.of("AED", "0.00").isPositive());
+        assertFalse(Money.of("AED", "-0.01").isPositive());
     }
 
     @Test
