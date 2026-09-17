@@ -43,6 +43,8 @@ I use the second. No interest is posted until the single credit on Day 6, and C1
 
 Neither moves money or posts a ledger entry. Both stay in the event log with their outcome, and the log is never edited. In the report Auth-B shows under authorisation states as DECLINED. E6 shows under errors, because there is no authorisation for it to be a state of. A reversal that names an unknown event would be rejected the same way as E6.
 
+A settlement is accepted only against an approved authorisation that has not yet been settled. One that names a declined authorisation, or a second one for the same authorisation, is rejected the same way as E6.
+
 ## 5. Replay order
 
 Within each account the brief's listed order already runs by posting day. The one exception is across accounts: E10 on ACC-002 is posted Day 5 but listed after E9 on ACC-001, posted Day 6. The accounts do not affect each other, so no balance depends on it.
