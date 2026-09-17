@@ -24,3 +24,21 @@ I would introduce it in two steps, because they cost different things.
 
 - First as a convenience. If a late entry reaches back past the brought-forward date, the figure is discarded and rebuilt from the full log. No rule changes and no answer changes. The common case is fast and the rare case is slow.
 - Then as a closed period. Once the bank agrees that nothing may be dated further back than, say, 30 days, the rare case disappears too. The price is that a genuinely old correction can no longer carry its true date. It has to be posted today as an explicit adjustment. That is a business decision, not a technical one, and section 2 returns to it.
+
+## 2. Value-dated entries in production
+
+A value date lets an entry count from an earlier day than the one it arrived on. That keeps interest and fees fair to the customer. The price is that a closed day is not closed. When a late entry arrives, my daily report prints a "restated" line listing the earlier days whose closing balance has just changed.
+
+**Operational surface.**
+
+- What the customer has seen, and what the bank has reported, become wrong. A statement already issued, or a figure already sent to finance or the regulator, described a day that has since changed.
+- The ledger back-dates its own entries. I date a fee to the day it is for, so one late debit makes the ledger post further entries into the past, which also changes the interest on those days. Dating a fee on the evening it is charged would avoid that, but it would change the figures in my replay, so I raise it as a question for the product owner and not as a fix.
+- The build is lopsided. A late debit charges fees automatically. A late correction refunds nothing. `KnownGapTest` shows 75.00 of fees surviving the reversal of the debit that caused them. Section 4 returns to this.
+
+**Regulatory surface.**
+
+- Statements must be right. The Central Bank's Consumer Protection Standards require statements, and the calculations behind them, to be accurate. A late entry can make an accurate statement inaccurate after it was issued.
+- The bank's own errors. Article 5 of the same Standards says that when the bank's error costs a customer money, the bank must refund it immediately, tell the customer within 10 complete business days, and must not benefit. If the late debit in my replay was the bank's mistake, my build does none of these.
+- VAT on the fee, which I left out. An overdraft fee is an explicit charge, and explicit bank charges carry 5% VAT, where interest does not. My ledger charges a flat 25.00. In production the customer pays 1.25 on top, or the 25.00 includes it, and the brief does not say which. A fee dated into the past also raises the question of which tax period it belongs to.
+
+**The one control before going live: a statement never changes after the fact.** A statement shows each day as the bank knew it when the statement was issued, and it is never reissued. Anything that arrives later and counts from an earlier day appears on the next statement as an adjustment, showing the day it was posted, the day it counts from, and any fee, VAT or interest that moved because of it. That settles the tax question simply: a fee and its VAT belong to the period in which they were posted. It also makes the closed period in section 1 easier to accept, because an old correction posted today and shown as an adjustment is exactly how this control treats every late entry. My ledger already supports this, because every entry keeps both the day it was posted and the day it counts from, and my daily report already prints each day once and shows later changes on the day they arrived.
