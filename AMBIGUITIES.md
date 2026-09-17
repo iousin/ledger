@@ -27,6 +27,8 @@ I use the second. No interest is posted until the single credit on Day 6, and C1
 
 **Rounding.** Each day's interest is rounded half up to the currency's decimals, then the rounded figures are added, giving 0.93. Adding first and rounding after gives 0.92, which is why C8 is refused. No figure in this stream falls exactly on a half, so the rounding mode changes nothing here.
 
+**Where rounding happens.** An amount given with more decimals than its currency holds is refused, not rounded. Rounding happens in one place only, when a rate is applied.
+
 **"Three equal instalments."** BHD 10.000 does not divide by three at three decimals. I post 3.334, 3.333 and 3.333. The spare 0.001 goes on the first.
 
 ## 3. Authorisation and settlement
