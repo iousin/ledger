@@ -64,6 +64,11 @@ public record Money(Currency currency, BigDecimal amount) {
         return List.copyOf(result);
     }
 
+    @Override
+    public String toString() {
+        return currency.getCurrencyCode() + " " + amount.toPlainString();
+    }
+
     private void requireSameCurrency(Money other) {
         if (!currency.equals(other.currency)) {
             throw new IllegalArgumentException("Cannot combine " + currency + " with " + other.currency);

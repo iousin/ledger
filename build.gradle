@@ -1,9 +1,14 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group = 'io.mal'
 version = '0.1.0'
+
+application {
+    mainClass = 'io.mal.ledger.Main'
+}
 
 repositories {
     mavenCentral()

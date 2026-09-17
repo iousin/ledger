@@ -29,6 +29,13 @@ class MoneyTest {
     }
 
     @Test
+    void printsAsCurrencyCodeAndAmount() {
+        assertEquals("AED 250.00", Money.of("AED", "250").toString());
+        assertEquals("AED -230.00", Money.of("AED", "-230.00").toString());
+        assertEquals("BHD 0.004", Money.of("BHD", "0.004").toString());
+    }
+
+    @Test
     void refusesMoreDecimalsThanTheCurrencyHolds() {
         assertThrows(ArithmeticException.class, () -> Money.of("AED", "1.005"));
         assertThrows(ArithmeticException.class, () -> Money.of("BHD", "1.0005"));
