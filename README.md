@@ -61,6 +61,7 @@ Errors    none
 
 - `REJECTED.md`: the acceptance criteria I refused, with figures.
 - `AMBIGUITIES.md`: where the brief can be read more than one way, and what I chose.
+- `NUMBERS.md`: every constant, and what changes if it is halved.
 - `WORKLOG.md`: the timestamped log of the work.
 
 ## Code map
