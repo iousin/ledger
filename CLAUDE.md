@@ -1,6 +1,7 @@
 # Working agreement
 
-- Never commit or stage. Make the change, run the tests, stop. Ahmed reviews and commits.
+- Never commit or stage. Make the change and stop. Ahmed reviews and commits.
+- Do not run the build or the tests. Ahmed runs them. Write the code and its test, then say what to run and what result to expect.
 - No comments in code. The single exception is the intentionally failing test, which the brief requires to be inline-annotated.
 - Java 21 API only (`--release 21`). Plain Java, JUnit 5, no frameworks.
 - One slice per request: the smallest change that delivers it, its test, and a one-line WORKLOG entry. Then stop.
