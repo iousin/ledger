@@ -1,6 +1,6 @@
 # REJECTED
 
-The brief lists eight acceptance criteria and says some are wrong. I number them C1 to C8 in the order the brief gives them. I refuse four and accept four. Each refusal names the rule it breaks and shows the figures. Approaches abandoned during the build are recorded at the end.
+The brief lists eight acceptance criteria and says some are wrong. I number them C1 to C8 in the order the brief gives them. I refuse four and accept four. Each refusal names the rule it breaks and shows the figures. Approaches I considered and dropped are recorded at the end.
 
 All figures are for ACC-001 in AED unless stated.
 
@@ -25,7 +25,7 @@ The brief books a fee "with value_date equal to the day assessed". I read "the d
 
 ### C6. "After E9, all balances and fees return to their pre-E7 values."
 
-Refused. The ledger is append-only. E9 is a new credit of 620.00 with value date Day 2. E7 stays in the ledger and so do the three fees.
+Refused. The ledger is append-only. E9 is a new entry of +620.00 with value date Day 2. E7 stays in the ledger and so do the three fees.
 
 The fees were posted on Day 5 against the ledger as it stood that evening. A posted entry stands until a business event reverses it, and the stream contains no fee refund.
 
@@ -73,4 +73,14 @@ Rounding the unrounded total gives 0.92. The capitalised credit is 0.93. The 0.0
 
 ## Approaches abandoned
 
-None yet. Entries are added during the build as they happen.
+**Stopping the replay when a BHD account closes negative.** There is no BHD fee, so the first design let the fee pass fail loudly and halt everything. I dropped it because the accounts are independent, and a gap in one account's fee rules should not stop the other. The fee pass now skips any account not held in AED. The cost is that the skip is silent, which is recorded in AMBIGUITIES.md.
+
+**Sorting the ledger's entries.** After a refactor I considered keeping entries sorted by value date. No balance would change, because a sum does not care about order. The order entries arrived in is the audit trail, and sorting would mean inserting into the middle of an append-only list.
+
+**Growing the golden test slice by slice.** I wanted the oracle in early and to extend it with each slice. Its expected values would have been rewritten in almost every slice, as settlements, fees and the reversal arrived, and an oracle that follows the code checks nothing. It was written once, after all ten events could replay, and checked first against a separate script that shares no code with the project.
+
+**Asserting figures that a later slice could move.** Two early tests asserted balances after a replay that contained a negative day. When the fee pass arrived, one test's figures moved to -395.00 and 5.00, and one assertion had to be deleted. From then on a test asserts a balance only if no later slice can change it. C1's -370.00 before fees is pinned at ledger level, where there is no fee pass.
+
+**A byte-for-byte snapshot test of the report.** A layout change or a stray space would fail it without any real defect. The test checks whole lines under the right day with spacing normalised instead. Content and wording are still pinned, and the README quotes a real run.
+
+**Automatic fee refunds after a reversal.** Designed before the build and deferred. The worked figures are in AMBIGUITIES.md section 1, and KnownGapTest shows what the deferral costs.

@@ -70,7 +70,7 @@ All in `io.mal.ledger`.
 
 - `Money`: an amount at its currency's precision. The only place anything is rounded.
 - `Account`, `Entry`, `Ledger`: the append-only ledger. A closing balance is a sum over value dates.
-- `Event`, `Outcome`: the six kinds of event in the brief, and what happened to each.
+- `Event`, `Outcome`: the six kinds of event the replay handles, and what happened to each.
 - `Replay`: walks the days, applies events, then closes each day with fees and, on Day 6, interest.
 - `BriefStream`: the brief's two accounts and ten events.
 - `DailyReport`, `Main`: the printed report.

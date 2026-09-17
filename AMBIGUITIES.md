@@ -43,7 +43,7 @@ I use the second. No interest is posted until the single credit on Day 6, and C1
 
 ## 4. Declines and rejections
 
-Neither moves money or posts a ledger entry. Both stay in the event log with their outcome, and the log is never edited. In the report Auth-B shows under authorisation states as DECLINED. E6 shows under errors, because there is no authorisation for it to be a state of. A reversal that names an unknown event would be rejected the same way as E6.
+Neither moves money or posts a ledger entry. Both stay in the event log with their outcome, and the log is never edited. In the report Auth-B shows under authorisation states as DECLINED. E6 shows under errors, because there is no authorisation for it to be a state of.
 
 A settlement is accepted only against an approved authorisation that has not yet been settled. One that names a declined authorisation, or a second one for the same authorisation, is rejected the same way as E6.
 
@@ -59,4 +59,4 @@ Order within a day does matter once. On Day 5, E7 comes before E8, which is why 
 
 E9 names E7 but carries no amount. I post a new entry for E7's amount with the opposite sign, using E9's own posting day and value date. E7 is never touched.
 
-A reversal is accepted only against a posted credit or debit on the same account that has not already been reversed. Anything else is rejected the same way as E6. Reversing a settlement or releasing a hold is not modelled.
+A reversal is accepted only against a posted credit or debit on the same account that has not already been reversed. Anything else is rejected the same way as E6. Reversing an instalment credit or a settlement, or releasing a hold, is not modelled.
