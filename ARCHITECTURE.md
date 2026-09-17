@@ -42,3 +42,22 @@ A value date lets an entry count from an earlier day than the one it arrived on.
 - VAT on the fee, which I left out. An overdraft fee is an explicit charge, and explicit bank charges carry 5% VAT, where interest does not. My ledger charges a flat 25.00. In production the customer pays 1.25 on top, or the 25.00 includes it, and the brief does not say which. A fee dated into the past also raises the question of which tax period it belongs to.
 
 **The one control before going live: a statement never changes after the fact.** A statement shows each day as the bank knew it when the statement was issued, and it is never reissued. Anything that arrives later and counts from an earlier day appears on the next statement as an adjustment, showing the day it was posted, the day it counts from, and any fee, VAT or interest that moved because of it. That settles the tax question simply: a fee and its VAT belong to the period in which they were posted. It also makes the closed period in section 1 easier to accept, because an old correction posted today and shown as an adjustment is exactly how this control treats every late entry. My ledger already supports this, because every entry keeps both the day it was posted and the day it counts from, and my daily report already prints each day once and shows later changes on the day they arrived.
+
+## 3. Authorisation lifecycle
+
+In my model an authorisation ends in only two ways: it is declined when it arrives, or it is settled. There is a third possibility that is not an ending at all. An authorisation that is approved and never settled keeps its hold forever, because nothing in my build expires or releases one.
+
+That matters because the real world has endings my model cannot tell apart. A hotel or a car rental firm places a hold as a deposit. It may claim it, release it at checkout, or simply forget it, in which case the customer's bank lets it lapse, after about a week for most purchases and up to about a month for hotels and car rental. In my model the last two look the same: a hold that never goes away.
+
+One assumption I made on purpose. A settlement for less than the hold releases the whole hold, and the unused part needs no separate reversal. That matches the common case, such as a hotel bill below the deposit, or a fuel pump that holds a fixed amount and charges what was pumped. It is wrong for an order claimed in parts, which is the fifth row below.
+
+| What happens | Real-world case | My model today | What I would mandate |
+|---|---|---|---|
+| Declined | Not enough money | DECLINED outcome, no hold | Keep, and record the reason |
+| Settled for more | A tip added after approval. A hotel minibar | Debited in full with no check | A tolerance by merchant type, and a top-up authorisation above it. The excess is still paid, but flagged |
+| Released by the merchant | Checkout paid another way. A car returned undamaged. A cancelled order | Not possible. The hold stays | A RELEASED outcome that ends the hold, in full or in part |
+| Expired | The merchant neither claims nor releases | No expiry. The money is reserved forever | An EXPIRED outcome appended at day close, after a period set by merchant type |
+| Settled in parts | An order shipped in two parcels. A multi-leg ticket | The first settlement releases everything, so the second is rejected | A settlement marked as partial keeps the rest on hold until a final one, or expiry |
+| Settled with no live authorisation | A purchase made offline in flight. A claim arriving after expiry | REJECTED and no money moves, as the brief requires | Do not drop it. Send it to an exceptions queue, because the bank is generally expected to honour it and dispute it afterwards |
+
+Every new ending is an appended outcome, like the ones I already have. The log stays append-only, and holds are still read from it.
