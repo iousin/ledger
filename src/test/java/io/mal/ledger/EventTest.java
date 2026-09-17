@@ -25,6 +25,14 @@ class EventTest {
     }
 
     @Test
+    void refusesASettlementThatIsNotAboveZero() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Event.Settlement("E5", 4, ACC_001, "Auth-A", Money.of("AED", "-185.00"), 4));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Event.Settlement("E5", 4, ACC_001, "Auth-A", Money.of("AED", "0.00"), 4));
+    }
+
+    @Test
     void refusesACreditThatIsNotAboveZero() {
         assertThrows(IllegalArgumentException.class,
                 () -> new Event.Credit("E1", 1, ACC_001, Money.of("AED", "-1200.00"), 1));
