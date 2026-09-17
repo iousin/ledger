@@ -36,6 +36,17 @@ public sealed interface Event {
         }
     }
 
+    record InstalmentCredit(String id, int postingDay, Account account, Money amount, int instalments,
+                            int valueDate) implements Event {
+
+        public InstalmentCredit {
+            requirePositive(id, amount);
+            if (instalments < 1) {
+                throw new IllegalArgumentException(id + " must have at least one instalment, not " + instalments);
+            }
+        }
+    }
+
     private static void requirePositive(String id, Money amount) {
         if (!amount.isPositive()) {
             throw new IllegalArgumentException(id + " must carry an amount above zero, not " + amount.amount());

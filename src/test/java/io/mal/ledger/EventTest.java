@@ -33,6 +33,15 @@ class EventTest {
     }
 
     @Test
+    void refusesAnInstalmentCreditWithNoInstalmentsOrNoAmount() {
+        Account acc002 = new Account("ACC-002", Money.of("BHD", "0.000"));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Event.InstalmentCredit("E10", 5, acc002, Money.of("BHD", "10.000"), 0, 5));
+        assertThrows(IllegalArgumentException.class,
+                () -> new Event.InstalmentCredit("E10", 5, acc002, Money.of("BHD", "0.000"), 3, 5));
+    }
+
+    @Test
     void refusesACreditThatIsNotAboveZero() {
         assertThrows(IllegalArgumentException.class,
                 () -> new Event.Credit("E1", 1, ACC_001, Money.of("AED", "-1200.00"), 1));

@@ -90,6 +90,7 @@ public final class Replay {
             case Event.Debit debit -> post(debit, new Entry(
                     debit.account(), debit.postingDay(), debit.valueDate(), debit.amount().negate(),
                     Entry.Kind.DEBIT));
+            case Event.InstalmentCredit credit -> postInstalments(credit);
             case Event.Authorisation authorisation -> authorise(authorisation);
             case Event.Settlement settlement -> settle(settlement);
         };
@@ -150,6 +151,14 @@ public final class Replay {
     private Outcome post(Event event, Entry entry) {
         ledger.post(entry);
         return new Outcome(event, Outcome.Status.POSTED);
+    }
+
+    private Outcome postInstalments(Event.InstalmentCredit credit) {
+        for (Money instalment : credit.amount().allocate(credit.instalments())) {
+            ledger.post(new Entry(credit.account(), credit.postingDay(), credit.valueDate(), instalment,
+                    Entry.Kind.CREDIT));
+        }
+        return new Outcome(credit, Outcome.Status.POSTED);
     }
 
     private Outcome authorise(Event.Authorisation authorisation) {

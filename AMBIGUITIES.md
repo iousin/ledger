@@ -31,7 +31,7 @@ I use the second. No interest is posted until the single credit on Day 6, and C1
 
 **Where rounding happens.** An amount given with more decimals than its currency holds is refused, not rounded. Rounding happens in one place only, when a rate is applied.
 
-**"Three equal instalments."** BHD 10.000 does not divide by three at three decimals. I post 3.334, 3.333 and 3.333. The spare 0.001 goes on the first.
+**"Three equal instalments."** BHD 10.000 does not divide by three at three decimals. I post 3.334, 3.333 and 3.333. The spare 0.001 goes on the first. All three are posted on Day 5 with value date Day 5, because the brief gives E10 one booked day and one value date. Spread over following days, the third would fall outside the window.
 
 ## 3. Authorisation and settlement
 
