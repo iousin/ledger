@@ -61,3 +61,19 @@ One assumption I made on purpose. A settlement for less than the hold releases t
 | Settled with no live authorisation | A purchase made offline in flight. A claim arriving after expiry | REJECTED and no money moves, as the brief requires | Do not drop it. Send it to an exceptions queue, because the bank is generally expected to honour it and dispute it afterwards |
 
 Every new ending is an appended outcome, like the ones I already have. The log stays append-only, and holds are still read from it.
+
+## 4. What I cut and why
+
+Some cuts are already covered above: reading the whole ledger for every answer and days that never close (section 1), the missing VAT and statements that can be restated (section 2), and holds that never expire, cannot be released and cannot be claimed in parts (section 3). The rest are below.
+
+| What I cut | Why it stayed out | The risk it defers |
+|---|---|---|
+| A refund of a fee when its cause is reversed | It depends on why the debit was reversed, and the event does not say | A customer stays out of pocket after the bank's own error, against Article 5. Until it is built: a daily list of fees on days that no longer close negative, each refunded or confirmed within 10 business days |
+| A reason on a reversal | The brief's event carries none | A bank error and a merchant refund look identical, so nothing that depends on the difference can be automated |
+| A limit on fees | The rule as given has none | An account 1.00 overdrawn is charged 25.00 every day, and each fee deepens the overdraft |
+| A check for duplicates | A recorded stream arrives once | An event delivered twice is posted twice. Two holds with the same id are both released by one settlement |
+| Checking the whole stream before applying any of it | The checks sit where the data is used | A malformed event stops a replay partway, leaving a day half applied. An event for an unknown account posts, but is never charged, never earns and never prints |
+| Reversing anything but a plain credit or debit | It is the only case in the brief | No refund or chargeback of a settlement, and no reversal of an instalment credit |
+| A calendar | The brief's window is Days 1 to 6 | No cut-off time, time zone, weekend or holiday, all of which decide a real value date |
+| The other side of each entry | The brief asks for an account ledger | Fees and interest come from nowhere and go nowhere, so nothing reconciles against the bank's own books |
+| Storage and more than one thread | The brief asks for an in-memory build | No recovery except a full replay. Two events on one account at the same moment would race the available balance check |
